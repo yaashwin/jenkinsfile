@@ -1,0 +1,41 @@
+pipeline {
+    agent any
+    environment {
+        SONAR_TOKEN = ''
+        SONARQUBE_URL = 'http://44.211.76.225:9000/'
+        PATH = "/opt/sonar-scanner/bin:${env.PATH}"
+    }
+    stages {
+        stage('Checkout Code') {
+            steps {
+                // Clone the GitHub repository containing index.html
+                git branch: 'main', url: 'https://github.com/yaashwin/finalyear.git'
+            }
+        }
+        stage('SonarQube Scan') {
+            steps {
+                script {
+                    // Run the SonarQube scanner
+                    sh """
+                        sonar-scanner \
+                        -Dsonar.projectKey='poc3' \
+                        -Dsonar.sources=. \
+                        -Dsonar.inclusions='index.html' \
+                        -Dsonar.host.url=${SONARQUBE_URL} \
+sonar.login=squ_1cd6721dd55cbda29a5f0e67ff47fd3a0e5c23ae   
+                    """
+                    //sonar token 
+                }
+            }
+        }
+        // Other stages can be added here
+    }
+    post {
+        success {
+            echo 'SonarQube scan completed successfully!'
+        }
+        failure {
+            echo 'SonarQube scan failed!'
+        }
+    }
+}
